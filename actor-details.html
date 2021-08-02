@@ -1,0 +1,244 @@
+<ion-header class="toolbar_class" translucent="true">
+  <ion-toolbar style="color:white">
+    <ion-buttons slot="start">
+      <ion-back-button (click)="logout()"></ion-back-button>
+      <ion-label style="font-size: 22px">
+        <h2 class="ion-text-center title-cls title-cls">
+          <ion-icon name="receipt" style="font-size: 22px"></ion-icon>
+          <ion-label text-wrap style="font-size: 19px">{{userprofileName}} Profile</ion-label>
+        </h2>
+      </ion-label>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+
+</ion-header>
+<ion-content>
+  <!--<div *ngIf="actorData.mediaFile =='' || this.actorData.mediaFile == undefined">
+   <iframe  width="100%" height="42%" [src]="safeURL" frameborder="0" allowfullscreen>
+  </iframe> 
+  
+</div>-->
+
+  <ion-segment (ionChange)="changeCategory($event)" [(ngModel)]="segment" class="seg-class" sticky>
+
+    <ion-segment-button value="image">
+      <ion-icon src="../../../assets/icons/theater.svg"></ion-icon>
+      <ion-label>Image Profile</ion-label>
+    </ion-segment-button>
+
+    <ion-segment-button value="video">
+      <ion-icon src="../../../assets/icons/fun.svg"></ion-icon>
+      <ion-label>Video Profile</ion-label>
+    </ion-segment-button>
+
+  </ion-segment>
+
+  <ion-grid *ngIf="segment=='image'" fixed>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12">
+          <ion-item-divider sticky>
+            <ion-label style="    margin-left: 4px;    color: black !important;" class="tiles-header">
+              Avatars
+            </ion-label>
+            <ion-icon class="more-icon" name="chevron-forward-circle-outline"></ion-icon>
+
+          </ion-item-divider>
+          <div class="container">
+            <ion-slides pager="true" style="height: 246px;
+            width: -webkit-fill-available;" pager="true" [options]="slideOptsOne" #slideWithNav
+              (ionSlideDidChange)="SlideDidChange(sliderOne,slideWithNav)">
+
+              <ion-slide *ngFor="let post of imageList">
+                <ion-icon style="height: 198px;width: 20px;background: #e5dfdf;" name="chevron-back-outline"
+                  class="btnPrev" (click)="prev()"></ion-icon>
+                <img style="width: -webkit-fill-available;" src={{post}}>
+                <ion-icon style="height: 198px;width: 20px;background: #e5dfdf;" name="chevron-forward-outline"
+                  class="btnNext" (click)="next()"></ion-icon>
+              </ion-slide>
+
+            </ion-slides>
+          </div>
+        </ion-col>
+
+      </ion-row>
+
+      <ion-row>
+        <ion-col>
+          <ion-item-divider>
+            <ion-item style="margin-right: 2px;
+      margin-left: 1px;
+      width: 341px !important;">
+              <ion-textarea class="ion-cust-text" rows="2" cols="27" placeholder="Write your comments..."
+                [(ngModel)]="postComment"></ion-textarea>
+
+              <ion-fab style="height: 33px;
+      width: 33px;
+      margin-left: 49px;
+      margin-right: 15px;
+      margin-bottom: 16px;" vertical="bottom" horizontal="end">
+                <ion-fab-button color="dark">
+                  <ion-icon name="send" (click)="saveComments(commentsObj)"></ion-icon>
+                </ion-fab-button>
+              </ion-fab>
+
+            </ion-item>
+
+          </ion-item-divider>
+
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-list style="width: -webkit-fill-available;
+        height: -webkit-fill-available;
+        overflow: scroll;">
+           <ion-card>
+          <ion-item *ngFor="let comm of commentsObj">
+            <ion-avatar slot="start">
+              <img [src]="comm.thumnail">
+            </ion-avatar>
+            <ion-label>
+              <h2 style="color: #666666ba;
+              font-size: 12px;">
+                <ion-icon name="at-circle-sharp"></ion-icon>{{comm.uploadedBy}} &nbsp;
+                <div class="ion-text-end" style="   color: #666666;
+    font-size: 12px;
+    margin-top: -8px;">
+                  <ion-icon name="time-sharp"></ion-icon>&nbsp; {{ago(comm.uploadedOn)}}
+                </div>
+              </h2>
+              <h2 style="    color: black;
+              font-size: 19px;
+              margin-left: 12px ;">{{comm.commentText}} </h2>
+              <div class="ion-text-end" style="margin-left: 15px;color: black;">
+
+              </div>
+            </ion-label>
+
+          </ion-item>
+          </ion-card>
+          
+        </ion-list>
+
+      </ion-row>
+
+    </ion-grid>
+  </ion-grid>
+
+  <ion-grid *ngIf="tabType=='video'" fixed>
+    <div class="container" *ngIf="actorData.mediaFile =='' || this.actorData.mediaFile == undefined">
+      <ion-slides style="height: 200px;" pager="true" [options]="slideOptsOne" #slideWithNav
+        (ionSlideDidChange)="SlideDidChange(sliderOne,slideWithNav)">
+        <ng-container *ngIf="isLoaded; else elseTemplate">
+          <ion-slide *ngFor="let eachUrl of safeURLs">
+            <ion-icon style="height: 198px;width: 20px;background: #e5dfdf;" *ngIf="safeURLs.length > 1"
+              name="chevron-back-outline" class="btnPrev" (click)="prev()"></ion-icon>
+            <iframe width="100%" height="100%" [src]="eachUrl" frameborder="0" allowfullscreen>
+            </iframe>
+            <ion-icon style="height: 198px;width: 20px;background: #e5dfdf;" *ngIf="safeURLs.length > 1"
+              name="chevron-forward-outline" class="btnNext" (click)="next()"></ion-icon>
+          </ion-slide>
+        </ng-container>
+        <ng-template #elseTemplate>
+          <ion-slide style="background-image: linear-gradient(black, rgb(78, 77, 77));" *ngFor="let post of dummyData">
+
+            <div class="content">
+              <p>
+                <ion-skeleton-text animated></ion-skeleton-text>
+              </p>
+            </div>
+          </ion-slide>
+        </ng-template>
+
+      </ion-slides>
+    </div>
+    <div *ngIf="actorData.mediaFile !=='' && this.actorData.mediaFile !== undefined" class="ion-text-center">
+      <video style="width: 100%;height: 200px;" autoplay="true" src="{{actorData.mediaFile}}#t=0.1" controls>
+      </video>
+    </div>
+    <ion-item-divider class="ass-movie" sticky>
+      <ion-label class="tiles-header ion-padding-start">
+        <ion-icon name="ribbon"></ion-icon> &nbsp; Associated Stories &nbsp; <ion-icon name="ribbon"></ion-icon>
+      </ion-label>
+
+    </ion-item-divider>
+    <ion-item-divider>
+
+      <img class="actor-cls" src="{{actorData.image}}">
+
+      <span style="font-size: 18px;padding-left: 11px;color: #383a3e;font-style: italic">"{{actorData.skills}}"
+      </span>
+      <!--<span style="font-size: 18px;padding-left: 11px;color: #383a3e;"></span>-->
+
+    </ion-item-divider>
+    <ng-container *ngIf="isLoaded; else elseTemplate"><br>
+      <span *ngIf="this.associatedStories.length ==0"
+        style="margin-left: 30px;font-size: 18px;padding-left: 11px;color: #383a3e;">
+        <b>No stories you have mapped so far.</b>
+      </span>
+      <span *ngIf="this.associatedStories.length > 0" style="color: #383a3e;">
+        <b>{{userprofileName}} mapped {{storyCount}} time(s) for the below script(s) by the audience so far.</b>
+      </span>
+      <ion-col size="12" size-md="12" *ngFor="let post of associatedStories">
+        <ion-card>
+
+          <ion-item-divider style="border: none;" (click)="goToDetail(post)">
+            <ion-avatar slot="start">
+              <img src={{post.image}}>
+            </ion-avatar>
+            <ion-label>
+              <ion-label style="font-size: 21px;width: 500px;">
+                <ion-label>
+                  <h2 class="title-cls">
+                    <ion-icon name="receipt"></ion-icon> &nbsp; {{post.title}}
+                  </h2>
+                  <ion-item-divider style="border: none;">
+                    <p style="color: #dd0e04;">
+                      <ion-icon name="thumbs-up"></ion-icon> {{post.likes.length }} likes
+                    </p>
+
+                    <p style="margin-left: 7%;">
+                      <ion-icon name="people"></ion-icon> {{post.views}} Views
+                    </p>
+
+
+                  </ion-item-divider>
+
+                </ion-label>
+              </ion-label>
+            </ion-label>
+          </ion-item-divider>
+        </ion-card>
+      </ion-col>
+
+    </ng-container>
+    <ng-template #elseTemplate>
+      <ion-col size="12" size-md="12" *ngFor="let post of dummyData">
+        <ion-card>
+          <ion-avatar slot="start">
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </ion-avatar>
+          <ion-item-divider style="border: none;">
+            <ion-label>
+              <h2>
+                <ion-skeleton-text animated style="width: 100px;"></ion-skeleton-text>
+              </h2>
+              <span>
+                <ion-skeleton-text animated style="width: 180px;"></ion-skeleton-text>
+              </span>
+            </ion-label>
+          </ion-item-divider>
+        </ion-card>
+      </ion-col>
+    </ng-template>
+  </ion-grid>
+</ion-content>
